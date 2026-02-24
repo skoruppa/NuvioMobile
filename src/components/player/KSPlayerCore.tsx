@@ -48,6 +48,7 @@ import { useTraktAutosync } from '../../hooks/useTraktAutosync';
 import { useMetadata } from '../../hooks/useMetadata';
 import { usePlayerGestureControls } from '../../hooks/usePlayerGestureControls';
 import stremioService from '../../services/stremioService';
+import { storageService } from '../../services/storageService';
 import { logger } from '../../utils/logger';
 
 // Utils
@@ -227,7 +228,15 @@ const KSPlayerCore: React.FC = () => {
     currentTime,
     duration,
     isSeeking,
-    isMounted
+    isMounted,
+    onSeekComplete: (timeInSeconds) => {
+      if (!id || !type || duration <= 0) return;
+      void storageService.setWatchProgress(id, type, {
+        currentTime: timeInSeconds,
+        duration,
+        lastUpdated: Date.now()
+      }, episodeId);
+    }
   });
 
   const watchProgress = useWatchProgress(

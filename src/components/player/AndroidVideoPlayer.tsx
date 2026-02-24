@@ -768,7 +768,17 @@ const AndroidVideoPlayer: React.FC = () => {
             onProgress={handleProgress}
             onSeek={(data) => {
               playerState.isSeeking.current = false;
-              if (data.currentTime) traktAutosync.handleProgressUpdate(data.currentTime, playerState.duration, true);
+              if (data.currentTime) {
+                if (id && type && playerState.duration > 0) {
+                  void storageService.setWatchProgress(id, type, {
+                    currentTime: data.currentTime,
+                    duration: playerState.duration,
+                    lastUpdated: Date.now(),
+                    addonId: currentStreamProvider
+                  }, episodeId);
+                }
+                traktAutosync.handleProgressUpdate(data.currentTime, playerState.duration, true);
+              }
             }}
             onEnd={() => {
               if (modals.showEpisodeStreamsModal) return;

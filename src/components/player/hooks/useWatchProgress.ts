@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
 import { storageService } from '../../../services/storageService';
 import { logger } from '../../../utils/logger';
 import { useSettings } from '../../../hooks/useSettings';
@@ -19,10 +19,9 @@ export const useWatchProgress = (
     const [savedDuration, setSavedDuration] = useState<number | null>(null);
     const [initialPosition, setInitialPosition] = useState<number | null>(null);
     const [showResumeOverlay, setShowResumeOverlay] = useState(false);
-    const [progressSaveInterval, setProgressSaveInterval] = useState<NodeJS.Timeout | null>(null);
-
     const { settings: appSettings } = useSettings();
     const initialSeekTargetRef = useRef<number | null>(null);
+    const wasPausedRef = useRef<boolean>(paused);
 
     // Values refs for unmount cleanup
     const currentTimeRef = useRef(currentTime);
@@ -126,22 +125,16 @@ export const useWatchProgress = (
         }
     };
 
-    // Save Interval
+    
     useEffect(() => {
-        if (id && type && !paused && duration > 0) {
-            if (progressSaveInterval) clearInterval(progressSaveInterval);
-
-            const interval = setInterval(() => {
-                saveWatchProgress();
-            }, 10000);
-
-            setProgressSaveInterval(interval);
-            return () => {
-                clearInterval(interval);
-                setProgressSaveInterval(null);
-            };
+        if (wasPausedRef.current !== paused) {
+            const becamePaused = paused;
+            wasPausedRef.current = paused;
+            if (becamePaused) {
+                void saveWatchProgress();
+            }
         }
-    }, [id, type, paused, currentTime, duration]);
+    }, [paused]);
 
     // Unmount Save - deferred to allow navigation to complete first
     useEffect(() => {
