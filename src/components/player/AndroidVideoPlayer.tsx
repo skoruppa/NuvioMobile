@@ -49,7 +49,7 @@ import { CustomAlert } from '../CustomAlert';
 
 
 // Android-specific components
-import { VideoSurface, buildExoAudioTrackName, buildExoSubtitleTrackName } from './android/components/VideoSurface';
+import { VideoSurface } from './android/components/VideoSurface';
 import { MpvPlayerRef } from './android/MpvPlayer';
 
 // Utils
@@ -60,6 +60,7 @@ import { storageService } from '../../services/storageService';
 import stremioService from '../../services/stremioService';
 import { WyzieSubtitle, SubtitleCue } from './utils/playerTypes';
 import { findBestSubtitleTrack, findBestAudioTrack } from './utils/trackSelectionUtils';
+import { buildExoAudioTrackName, buildExoSubtitleTrackName } from './android/components/VideoSurface';
 import { useTheme } from '../../contexts/ThemeContext';
 import axios from 'axios';
 
